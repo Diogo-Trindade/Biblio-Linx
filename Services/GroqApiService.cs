@@ -11,7 +11,6 @@ public class GroqApiService : IGroqApiService
 {
     private readonly string _url = "https://api.groq.com/openai/v1/chat/completions";
     
-    // A sua chave de backup original (caso queira usá-la)
    private readonly string _chaveUniversal = "";
 
     private string ApiKey 
