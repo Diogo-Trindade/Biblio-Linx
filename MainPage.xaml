@@ -1,0 +1,532 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:BiblioLinx.Converters"
+             xmlns:richtext="clr-namespace:Syncfusion.Maui.RichTextEditor;assembly=Syncfusion.Maui.RichTextEditor" 
+             x:Class="BiblioLinx.MainPage"
+             x:Name="RootPage"
+             BackgroundColor="{Binding AppBackgroundColor}"
+             Title="BiblioLinx"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:TextCleanerConverter x:Key="TextCleaner" />
+
+            <DataTemplate x:Key="ChatTemplate">
+                <Grid Padding="0,8">
+                    <Border StrokeThickness="0" Padding="16,12" HorizontalOptions="End" MaximumWidthRequest="600" BackgroundColor="#4C1D95">
+                        <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding IsAi}" Value="True"><Setter Property="IsVisible" Value="False" /></DataTrigger></Border.Triggers>
+                        <Border.StrokeShape><RoundRectangle CornerRadius="18,18,6,18" /></Border.StrokeShape>
+                        <Label Text="{Binding Text, Converter={StaticResource TextCleaner}}" TextColor="White" FontFamily="OpenSansRegular" FontSize="14" LineBreakMode="WordWrap"/>
+                    </Border>
+                    <Border StrokeThickness="1" Padding="16,12" HorizontalOptions="Start" MaximumWidthRequest="600" BackgroundColor="White" Stroke="#DED3EF">
+                        <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding IsAi}" Value="False"><Setter Property="IsVisible" Value="False" /></DataTrigger></Border.Triggers>
+                        <Border.StrokeShape><RoundRectangle CornerRadius="18,18,18,6" /></Border.StrokeShape>
+                        <Label Text="{Binding Text, Converter={StaticResource TextCleaner}, ConverterParameter='Html'}" TextType="Html" TextColor="#1F2430" FontFamily="OpenSansRegular" FontSize="14" LineBreakMode="WordWrap"/>
+                    </Border>
+                </Grid>
+            </DataTemplate>
+
+            <Style TargetType="Button" x:Key="SidebarButtonStyle">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="TextColor" Value="{Binding SidebarTextColor}"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="HeightRequest" Value="48"/>
+                <Setter Property="HorizontalOptions" Value="Fill"/>
+                <Setter Property="ContentLayout" Value="Left, 14"/>
+                <Setter Property="Padding" Value="15,0"/>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="Normal"><VisualState.Setters><Setter Property="Opacity" Value="1" /></VisualState.Setters></VisualState>
+                            <VisualState Name="PointerOver"><VisualState.Setters><Setter Property="Opacity" Value="0.7" /></VisualState.Setters></VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+            <Style TargetType="Button" x:Key="IconActionButtonStyle">
+                <Setter Property="FontFamily" Value="FluentIcons"/>
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="TextColor" Value="#6B7280"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="WidthRequest" Value="32"/>
+                <Setter Property="HeightRequest" Value="32"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="Normal" />
+                            <VisualState Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Property="Scale" Value="1.1" />
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid ColumnDefinitions="220,*" BackgroundColor="{Binding AppBackgroundColor}">
+
+        <Grid Grid.Column="0" BackgroundColor="{Binding SidebarColor}" RowDefinitions="80, *, Auto">
+            <Grid Grid.Row="0" Padding="15,0">
+                <Label Text="BiblioLinx" VerticalOptions="Center" FontFamily="OpenSansSemibold" FontSize="24" TextColor="White" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="1" Padding="10,20,10,20" Spacing="8">
+                <Button Text="{Binding TxtDashboard}" Style="{StaticResource SidebarButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Information">
+                    <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE80F;" Color="White" Size="16" /></Button.ImageSource>
+                    <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding CurrentView}" Value="Information"><Setter Property="BackgroundColor" Value="{Binding ActiveItemColor}" /><Setter Property="TextColor" Value="{Binding ActiveItemTextColor}" /></DataTrigger></Button.Triggers>
+                </Button>
+                
+                <Button Text="{Binding TxtCasos}" IsVisible="{Binding HasSavedCases}" Style="{StaticResource SidebarButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Casos">
+                    <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE81C;" Color="White" Size="16" /></Button.ImageSource>
+                    <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding CurrentView}" Value="Casos"><Setter Property="BackgroundColor" Value="{Binding ActiveItemColor}" /><Setter Property="TextColor" Value="{Binding ActiveItemTextColor}" /></DataTrigger></Button.Triggers>
+                </Button>
+
+                <Button Text="{Binding TxtCompartilhar}" Style="{StaticResource SidebarButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Share">
+                    <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE72D;" Color="White" Size="16" /></Button.ImageSource>
+                </Button>
+
+                <Button Text="{Binding TxtIA}" Style="{StaticResource SidebarButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="AIAssistant">
+                    <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE904;" Color="White" Size="16" /></Button.ImageSource>
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsProAtivo}" Value="False"><Setter Property="Opacity" Value="0.3" /></DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding CurrentView}" Value="AIAssistant"><Setter Property="BackgroundColor" Value="{Binding ActiveItemColor}" /><Setter Property="TextColor" Value="{Binding ActiveItemTextColor}" /></DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="{Binding TxtResumo}" Style="{StaticResource SidebarButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Resumo">
+                    <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE8F3;" Color="White" Size="16" /></Button.ImageSource>
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsProAtivo}" Value="False"><Setter Property="Opacity" Value="0.3" /></DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding CurrentView}" Value="Resumo"><Setter Property="BackgroundColor" Value="{Binding ActiveItemColor}" /><Setter Property="TextColor" Value="{Binding ActiveItemTextColor}" /></DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="{Binding TxtInstrucoes}" Style="{StaticResource SidebarButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Instructions">
+                    <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE897;" Color="White" Size="16" /></Button.ImageSource>
+                    <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding CurrentView}" Value="Instructions"><Setter Property="BackgroundColor" Value="{Binding ActiveItemColor}" /><Setter Property="TextColor" Value="{Binding ActiveItemTextColor}" /></DataTrigger></Button.Triggers>
+                </Button>
+            </VerticalStackLayout>
+
+            <Grid Grid.Row="2" Padding="15,0,15,20">
+                <VerticalStackLayout Spacing="10" VerticalOptions="End">
+                    <VerticalStackLayout Spacing="0" HorizontalOptions="Center" Margin="0,0,0,10">
+                        <Label Text="Desenvolvido por" FontFamily="OpenSansRegular" FontSize="11" TextColor="{Binding SidebarTextColor}" Opacity="0.6" HorizontalOptions="Center" />
+                        <Label Text="Diogo Trindade" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{Binding ActiveItemColor}" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <Button Text="{Binding TxtConfiguracoes}" Style="{StaticResource SidebarButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Settings" HorizontalOptions="Fill">
+                        <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE713;" Color="White" Size="20" /></Button.ImageSource>
+                    </Button>
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Column="1" RowDefinitions="80,*">
+
+            <Grid Grid.Row="0" BackgroundColor="{Binding TopbarColor}" Padding="20,10" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="18">
+                <Grid Grid.Column="0" VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="0">
+                        <Label Text="BiblioLinx" FontFamily="OpenSansSemibold" FontSize="22" TextColor="{Binding ButtonColor}" />
+                        <Label Text="Conjunto de Informações Linx" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{Binding ButtonColor}" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Border Grid.Column="1" BackgroundColor="White" StrokeThickness="0" HeightRequest="44" Padding="15,0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="450">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                    <Entry Text="{Binding SearchText}" Placeholder="{Binding TxtPesquisar}" BackgroundColor="Transparent" TextColor="{Binding PrimaryTextColor}" PlaceholderColor="{Binding SecondaryTextColor}" VerticalOptions="Center" ClearButtonVisibility="WhileEditing" />
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="1" BackgroundColor="{Binding AppBackgroundColor}">
+
+                <ContentView IsVisible="{Binding IsInformationVisible}">
+                    <Grid ColumnDefinitions="360,*" ColumnSpacing="0">
+                        <Grid Grid.Column="0" BackgroundColor="{Binding AppBackgroundColor}">
+                            <BoxView BackgroundColor="Transparent" HorizontalOptions="Fill" VerticalOptions="Fill"><BoxView.GestureRecognizers><TapGestureRecognizer Command="{Binding ClearSelectionCommand}" /></BoxView.GestureRecognizers></BoxView>
+                            <Grid RowDefinitions="Auto,*" Padding="25,25,10,25">
+                                <Border Grid.Row="0" BackgroundColor="{Binding CardColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" Padding="0" Margin="0,0,0,20" HeightRequest="46">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
+                                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding AddGroupCommand}" /></Border.GestureRecognizers>
+                                    <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
+                                        <Label Text="&#xE710;" FontFamily="FluentIcons" FontSize="14" TextColor="{Binding ButtonColor}" VerticalOptions="Center" />
+                                        <Label Text="{Binding TxtAddSecao}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{Binding SidebarColor}" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                                <ScrollView Grid.Row="1">
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding KnowledgeGroups}" Spacing="16">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BackgroundColor="{Binding ColorHex}" Stroke="#DED3EF" StrokeThickness="1" Padding="15">
+                                                    <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
+                                                    <VerticalStackLayout Spacing="8">
+                                                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" Margin="0,0,0,5">
+                                                            <Grid Grid.Column="0" ColumnDefinitions="Auto, *">
+                                                                <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnToggleGroupTapped" /></Grid.GestureRecognizers>
+                                                                <Label Grid.Column="0" Text="&#xE70D;" FontFamily="FluentIcons" FontSize="12" TextColor="#6B7280" VerticalOptions="Center">
+                                                                    <Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="False"><Setter Property="Text" Value="&#xE76C;" /></DataTrigger></Label.Triggers>
+                                                                </Label>
+                                                                <Label Grid.Column="1" Text="{Binding GroupName}" FontFamily="OpenSansSemibold" FontSize="16" TextColor="#1F2430" VerticalOptions="Center" Margin="5,0,0,0" />
+                                                            </Grid>
+                                                            <Button Grid.Column="1" Text="&#xE710;" FontFamily="FluentIcons" FontSize="18" TextColor="#10B981" BackgroundColor="Transparent" WidthRequest="32" HeightRequest="32" CornerRadius="16" Padding="0" VerticalOptions="Center" Style="{StaticResource IconActionButtonStyle}" Clicked="OnAddItemClicked" CommandParameter="{Binding .}" ToolTipProperties.Text="Nova Página" />
+                                                        </Grid>
+                                                        <HorizontalStackLayout Spacing="6" HorizontalOptions="Center" Margin="0,0,0,10">
+                                                            <Button Text="&#xE734;" Style="{StaticResource IconActionButtonStyle}" Clicked="OnFavoriteGroupClicked" CommandParameter="{Binding .}">
+                                                                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding IsFavorite}" Value="True"><Setter Property="Text" Value="&#xE735;"/><Setter Property="TextColor" Value="#FF8500"/></DataTrigger></Button.Triggers>
+                                                            </Button>
+                                                            <Button Text="&#xE790;" Style="{StaticResource IconActionButtonStyle}" Clicked="OnChangeGroupColorClicked" CommandParameter="{Binding .}"/>
+                                                            <Button Text="&#xE74A;" Style="{StaticResource IconActionButtonStyle}" Clicked="OnMoveGroupUpClicked" CommandParameter="{Binding .}"/>
+                                                            <Button Text="&#xE74B;" Style="{StaticResource IconActionButtonStyle}" Clicked="OnMoveGroupDownClicked" CommandParameter="{Binding .}"/>
+                                                            <Button Text="&#xE70F;" Style="{StaticResource IconActionButtonStyle}" Clicked="OnEditGroupClicked" CommandParameter="{Binding .}"/>
+                                                            <Button Text="&#xE74D;" Style="{StaticResource IconActionButtonStyle}" TextColor="#EF4444" Clicked="OnDeleteGroupClicked" CommandParameter="{Binding .}"/>
+                                                        </HorizontalStackLayout>
+                                                        <BoxView HeightRequest="1" Color="#15000000" Margin="0,5" IsVisible="{Binding IsExpanded}"/>
+                                                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="6" IsVisible="{Binding IsExpanded}" Margin="0,5,0,0">
+                                                            <BindableLayout.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid ColumnDefinitions="32, *, 32, 32, 32" ColumnSpacing="4" Margin="5,0,10,0" HorizontalOptions="Fill">
+                                                                        <Button Grid.Column="0" Text="&#xE734;" Style="{StaticResource IconActionButtonStyle}" Clicked="OnFavoriteItemClicked" CommandParameter="{Binding .}">
+                                                                            <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding IsFavorite}" Value="True"><Setter Property="Text" Value="&#xE735;"/><Setter Property="TextColor" Value="#FF8500"/></DataTrigger></Button.Triggers>
+                                                                        </Button>
+                                                                        <Label Grid.Column="1" Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="#1F2430" VerticalOptions="Center" HorizontalOptions="Fill" LineBreakMode="TailTruncation">
+                                                                            <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnSelectItemTapped" /></Label.GestureRecognizers>
+                                                                        </Label>
+                                                                        <Button Grid.Column="2" Text="&#xE74A;" Style="{StaticResource IconActionButtonStyle}" Clicked="OnMoveItemUpClicked" CommandParameter="{Binding .}"/>
+                                                                        <Button Grid.Column="3" Text="&#xE74B;" Style="{StaticResource IconActionButtonStyle}" Clicked="OnMoveItemDownClicked" CommandParameter="{Binding .}"/>
+                                                                        <Button Grid.Column="4" Text="&#xE74D;" Style="{StaticResource IconActionButtonStyle}" TextColor="#EF4444" Clicked="OnDeleteItemClicked" CommandParameter="{Binding .}"/>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </BindableLayout.ItemTemplate>
+                                                        </VerticalStackLayout>
+                                                    </VerticalStackLayout>
+                                                </Border>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </ScrollView>
+                            </Grid>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Border BackgroundColor="{Binding CardColor}" StrokeThickness="0" Padding="30" Margin="35" IsVisible="{Binding IsWelcomeVisible}" VerticalOptions="Fill" HorizontalOptions="Fill">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+                                    <Label Text="&#xE82D;" FontFamily="FluentIcons" FontSize="74" TextColor="{Binding ButtonColor}" HorizontalOptions="Center" />
+                                    <Label Text="BiblioLinx" FontFamily="OpenSansSemibold" FontSize="26" TextColor="{Binding PrimaryTextColor}" HorizontalOptions="Center"/>
+                                    <Label Text="Selecione um grupo ou informações no menu lateral para visualizar." FontFamily="OpenSansRegular" FontSize="16" TextColor="{Binding SecondaryTextColor}" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="{Binding CardColor}" StrokeThickness="0" Padding="40" Margin="30" IsVisible="{Binding IsReadMode}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                <Grid RowDefinitions="Auto, Auto, *">
+                                    <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="15" Margin="0,0,0,20">
+                                        <Label Grid.Column="0" Text="{Binding SelectedKnowledgeItem.Title}" FontFamily="OpenSansSemibold" FontSize="32" TextColor="{Binding PrimaryTextColor}" VerticalOptions="Center" />
+                                        <Button Grid.Column="1" Text="Editar Página" Command="{Binding HabilitarEdicaoCommand}" BackgroundColor="{Binding SidebarColor}" TextColor="White" FontFamily="OpenSansSemibold" CornerRadius="8" HeightRequest="40" Padding="25,0" VerticalOptions="Center">
+                                            <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE70F;" Color="White" Size="14"/></Button.ImageSource>
+                                        </Button>
+                                    </Grid>
+                                    <BoxView Grid.Row="1" HeightRequest="1" Color="{Binding BorderColor}" Margin="0,0,0,20"/>
+                                    <Border Grid.Row="2" StrokeThickness="0" BackgroundColor="Transparent" Margin="0">
+                                        <WebView BackgroundColor="Transparent" VerticalOptions="Fill" HorizontalOptions="Fill">
+                                            <WebView.Source>
+                                                <HtmlWebViewSource Html="{Binding TextoLeitura, Converter={StaticResource TextCleaner}, ConverterParameter='DocumentHtml'}" />
+                                            </WebView.Source>
+                                        </WebView>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <Border BackgroundColor="{Binding CardColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" Margin="30" Padding="40" IsVisible="{Binding IsEditorEnabled}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                <Border.Shadow><Shadow Brush="Black" Offset="0,5" Radius="15" Opacity="0.04" /></Border.Shadow>
+                                <Grid RowDefinitions="Auto, Auto, *">
+                                    <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="15" Margin="0,0,0,20">
+                                        <Entry Grid.Column="0" Text="{Binding SelectedKnowledgeItem.Title}" Placeholder="Página sem título" BackgroundColor="Transparent" TextColor="{Binding PrimaryTextColor}" FontFamily="OpenSansSemibold" FontSize="32" HorizontalOptions="Fill" />
+                                        <Button Grid.Column="1" Text="Salvar Alterações" Command="{Binding SalvarEdicaoCommand}" BackgroundColor="{Binding ButtonColor}" TextColor="White" FontFamily="OpenSansSemibold" CornerRadius="8" HeightRequest="40" Padding="25,0" VerticalOptions="Center"/>
+                                    </Grid>
+
+                                    <Button Grid.Row="1" Text=" Melhorar com IA" Command="{Binding ImproveTextWithAICommand}" BackgroundColor="{Binding AppBackgroundColor}" TextColor="{Binding SidebarColor}" FontFamily="OpenSansSemibold" FontSize="13" HeightRequest="36" CornerRadius="8" Padding="15,0" HorizontalOptions="Start" Margin="0,0,0,15">
+                                        <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE81E;" Color="{Binding SidebarColor}" Size="14"/></Button.ImageSource>
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsProAtivo}" Value="False"><Setter Property="Opacity" Value="0.3"/></DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsImprovingText}" Value="True"><Setter Property="Text" Value="Processando..."/></DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+
+                                    <richtext:SfRichTextEditor x:Name="MainRichTextEditor" Grid.Row="2" HtmlText="{Binding EditorHtmlText, Mode=TwoWay}" Placeholder="Escreva o seu conhecimento aqui..." BackgroundColor="Transparent" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </ContentView>
+
+                <ContentView IsVisible="{Binding IsCasosVisible}">
+                    <Grid ColumnDefinitions="300,*" ColumnSpacing="0">
+                        <Grid Grid.Column="0" BackgroundColor="{Binding AppBackgroundColor}" Padding="25,25,10,25">
+                            <ScrollView>
+                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding SupportCases}" Spacing="16">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BackgroundColor="White" Stroke="#DED3EF" StrokeThickness="1" Padding="15">
+                                                <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                                                <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="5">
+                                                    <Label Grid.Column="0" Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="#1F2430" VerticalOptions="Center">
+                                                        <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnSelectSupportCaseTapped" /></Label.GestureRecognizers>
+                                                    </Label>
+                                                    <Button Grid.Column="1" Text="&#xE70F;" FontFamily="FluentIcons" FontSize="12" Clicked="OnEditCasoClicked" CommandParameter="{Binding .}" BackgroundColor="Transparent" TextColor="#6B7280" Padding="0" WidthRequest="30" HeightRequest="30"/>
+                                                    <Button Grid.Column="2" Text="&#xE74D;" FontFamily="FluentIcons" FontSize="12" Clicked="OnDeleteCasoClicked" CommandParameter="{Binding .}" BackgroundColor="Transparent" TextColor="#EF4444" Padding="0" WidthRequest="30" HeightRequest="30"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </ScrollView>
+                        </Grid>
+                        
+                        <ScrollView Grid.Column="1" Padding="25">
+                            <Grid>
+                                <Border BackgroundColor="{Binding CardColor}" StrokeThickness="0" Padding="30" IsVisible="{Binding IsCasoSelected}">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="15">
+                                        <Editor Text="{Binding SelectedSupportCase.Title}" IsReadOnly="True" AutoSize="TextChanges" BackgroundColor="Transparent" FontFamily="OpenSansSemibold" FontSize="24" TextColor="{Binding PrimaryTextColor}" />
+                                        <Label Text="{Binding SelectedSupportCase.CreatedAt, StringFormat='Salvo em: {0:dd/MM/yyyy HH:mm}'}" FontFamily="OpenSansRegular" FontSize="12" TextColor="{Binding SecondaryTextColor}" />
+                                        <BoxView HeightRequest="1" Color="{Binding BorderColor}" Margin="0,5"/>
+                                        <Label Text="Análise e Resumo (IA):" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding SidebarColor}" />
+                                        <Editor Text="{Binding SelectedSupportCase.SummaryText, Converter={StaticResource TextCleaner}}" IsReadOnly="True" AutoSize="TextChanges" BackgroundColor="Transparent" FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding PrimaryTextColor}" Margin="0,0,0,20"/>
+                                        <Label Text="Histórico Original do Caso:" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding ButtonColor}" />
+                                        <Editor Text="{Binding SelectedSupportCase.OriginalText, Converter={StaticResource TextCleaner}}" IsReadOnly="True" AutoSize="TextChanges" BackgroundColor="Transparent" FontFamily="OpenSansRegular" FontSize="14" TextColor="{Binding SecondaryTextColor}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+                        </ScrollView>
+                    </Grid>
+                </ContentView>
+
+                <ContentView IsVisible="{Binding IsResumoVisible}">
+                    <Grid Padding="24" ColumnDefinitions="*,16,*" RowDefinitions="Auto,*,Auto">
+                        <VerticalStackLayout Grid.ColumnSpan="3" Spacing="4" Margin="0,0,0,14">
+                            <Label Text="{Binding TxtResumo}" FontFamily="OpenSansSemibold" FontSize="24" TextColor="{Binding PrimaryTextColor}" />
+                            <Label Text="Cole o atendimento e gere um resumo inteligente." FontFamily="OpenSansRegular" FontSize="14" TextColor="{Binding SecondaryTextColor}" />
+                        </VerticalStackLayout>
+                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{Binding CardColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" Padding="18">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,*">
+                                <Label Text="Caso" FontFamily="OpenSansSemibold" TextColor="{Binding PrimaryTextColor}" Margin="0,0,0,10"/>
+                                <Editor Grid.Row="1" Text="{Binding ChatInput}" BackgroundColor="Transparent" TextColor="{Binding PrimaryTextColor}" AutoSize="TextChanges" Placeholder="Cole aqui o texto do chat..."/>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="2" BackgroundColor="{Binding CardColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" Padding="18">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,*">
+                                <Label Text="Saída" FontFamily="OpenSansSemibold" TextColor="{Binding PrimaryTextColor}" Margin="0,0,0,10"/>
+                                <ScrollView Grid.Row="1">
+                                    <Editor Text="{Binding ResumoOutput, Converter={StaticResource TextCleaner}}" IsReadOnly="True" AutoSize="TextChanges" BackgroundColor="Transparent" TextColor="#1F2430" FontFamily="OpenSansRegular" FontSize="15" />
+                                </ScrollView>
+                            </Grid>
+                        </Border>
+                        <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="3" Spacing="12" Margin="0,16,0,0">
+                            <Button Text="Gerar resumo" Command="{Binding GerarResumoCommand}" BackgroundColor="{Binding ButtonColor}" TextColor="White" FontFamily="OpenSansSemibold" CornerRadius="12" HeightRequest="42"/>
+                            <Button Text="Salvar Caso" Command="{Binding SalvarCasoCommand}" BackgroundColor="{Binding SidebarColor}" TextColor="White" FontFamily="OpenSansSemibold" CornerRadius="12" HeightRequest="42"/>
+                            <Button Text="Limpar" Command="{Binding ExcluirResumoCommand}" BackgroundColor="Transparent" BorderColor="{Binding BorderColor}" BorderWidth="1" TextColor="{Binding PrimaryTextColor}" CornerRadius="12"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </ContentView>
+
+                <ContentView IsVisible="{Binding IsAIAssistantVisible}">
+                    <Grid Padding="30" RowDefinitions="Auto,*,Auto" RowSpacing="15">
+                        <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding TxtIA}" FontFamily="OpenSansSemibold" FontSize="28" TextColor="{Binding PrimaryTextColor}" />
+                                <Label Text="Converse com a sua base de conhecimento." FontFamily="OpenSansRegular" FontSize="16" TextColor="{Binding SecondaryTextColor}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="Reiniciar Chat" Command="{Binding ClearChatCommand}" BackgroundColor="Transparent" BorderColor="{Binding BorderColor}" BorderWidth="1" TextColor="{Binding PrimaryTextColor}" CornerRadius="12" HeightRequest="44" Padding="20,0" VerticalOptions="Center">
+                                <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE72C;" Color="{Binding PrimaryTextColor}" Size="16"/></Button.ImageSource>
+                            </Button>
+                        </Grid>
+                        <CollectionView x:Name="ChatMessagesCollectionView" Grid.Row="1" ItemsSource="{Binding ChatMessages}" ItemTemplate="{StaticResource ChatTemplate}" SelectionMode="None" BackgroundColor="Transparent" Margin="0,0,0,15">
+                            <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="10" /></CollectionView.ItemsLayout>
+                        </CollectionView>
+                        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="15" VerticalOptions="End" HeightRequest="60">
+                            <Border BackgroundColor="White" Stroke="{Binding BorderColor}" StrokeThickness="1" HeightRequest="60">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="30" /></Border.StrokeShape>
+                                <Grid ColumnDefinitions="*,Auto" Padding="15,0">
+                                    <Entry Text="{Binding CurrentChatMessage}" Placeholder="Digite sua pergunta..." PlaceholderColor="{Binding SecondaryTextColor}" BackgroundColor="Transparent" TextColor="{Binding PrimaryTextColor}" FontFamily="OpenSansRegular" FontSize="16" ReturnCommand="{Binding EnviarMensagemChatCommand}" VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                            <Button Grid.Column="1" Command="{Binding EnviarMensagemChatCommand}" IsEnabled="{Binding IsNotBusy}" BackgroundColor="{Binding ButtonColor}" CornerRadius="30" WidthRequest="60" HeightRequest="60" Padding="0">
+                                <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE724;" Color="White" Size="24"/></Button.ImageSource>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </ContentView>
+
+                <ContentView IsVisible="{Binding IsInstructionsVisible}">
+                    <ScrollView>
+                        <Grid Padding="40">
+                            <VerticalStackLayout Spacing="30" HorizontalOptions="Center" MaximumWidthRequest="850">
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,0,0,20">
+                                    <Label Text="📖 Manual do BiblioLinx" HorizontalOptions="Center" FontFamily="OpenSansSemibold" FontSize="36" TextColor="{Binding SidebarColor}" />
+                                    <Label Text="Bem-vindo ao BiblioLinx. Aprenda a dominar o seu novo espaço de trabalho." HorizontalOptions="Center" HorizontalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="16" TextColor="{Binding SecondaryTextColor}" />
+                                </VerticalStackLayout>
+
+                                <Border BackgroundColor="{Binding CardColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" Padding="30">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="15">
+                                        <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+                                            <Label Text="&#xE80F;" FontFamily="FluentIcons" FontSize="24" TextColor="{Binding ButtonColor}" VerticalOptions="Center"/>
+                                            <Label Text="Gestão de Conhecimento" FontFamily="OpenSansSemibold" FontSize="22" TextColor="{Binding PrimaryTextColor}" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <BoxView HeightRequest="1" Color="{Binding BorderColor}" Margin="0,5"/>
+                                        <Label Text="• Organização em Grupos:" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                                        <Label Text="Clique em 'Adicionar seção' para criar categorias. Dentro de cada secção, clique no ícone '+' a verde para criar novas páginas." FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="15,0,0,10"/>
+                                        
+                                        <Label Text="• Modo de Leitura e Edição:" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                                        <Label Text="Ao abrir uma página, ela é apresentada num formato limpo e livre de distrações (Modo Leitura). O texto pode ser selecionado e copiado. Para fazer alterações, clique no botão 'Editar Página'." FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="15,0,0,10"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border BackgroundColor="{Binding CardColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" Padding="30">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="15">
+                                        <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+                                            <Label Text="&#xE81C;" FontFamily="FluentIcons" FontSize="24" TextColor="{Binding ButtonColor}" VerticalOptions="Center"/>
+                                            <Label Text="Análise de Atendimentos (Pro)" FontFamily="OpenSansSemibold" FontSize="22" TextColor="{Binding PrimaryTextColor}" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <BoxView HeightRequest="1" Color="{Binding BorderColor}" Margin="0,5"/>
+                                        
+                                        <Label Text="• Resumir um Caso:" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                                        <Label Text="Cole o histórico bruto de um chat de suporte no separador 'Resumir Caso' e clique em gerar. A IA irá extrair o problema, as ações tomadas e a solução final em texto limpo." FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="15,0,0,10"/>
+                                        
+                                        <Label Text="• Guardar e Consultar:" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                                        <Label Text="Pode salvar os resumos úteis. Eles ficarão armazenados no menu 'Casos Salvos'. Todos os textos nessa secção são copiáveis, o que facilita o preenchimento rápido de relatórios." FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="15,0,0,0"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border BackgroundColor="{Binding CardColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" Padding="30">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="15">
+                                        <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+                                            <Label Text="&#xE904;" FontFamily="FluentIcons" FontSize="24" TextColor="{Binding ButtonColor}" VerticalOptions="Center"/>
+                                            <Label Text="Assistente Pessoal e IA (Pro)" FontFamily="OpenSansSemibold" FontSize="22" TextColor="{Binding PrimaryTextColor}" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <BoxView HeightRequest="1" Color="{Binding BorderColor}" Margin="0,5"/>
+                                        
+                                        <Label Text="• Pesquisa Dinâmica:" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                                        <Label Text="Esqueça ter de ler manuais inteiros. Abra o separador 'IA Assistente' e faça perguntas diretas como: 'Como resolvo o erro T12?'. A IA consultará a sua base de dados e dar-lhe-á a resposta exata." FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="15,0,0,10"/>
+
+                                        <Label Text="• Melhoria de Texto:" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                                        <Label Text="No Modo de Edição, pode clicar em 'Melhorar com IA'. O sistema irá analisar o seu texto e reescrevê-lo com gramática, clareza e estrutura profissionais, mantendo a formatação." FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="15,0,0,0"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border BackgroundColor="{Binding CardColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" Padding="30">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="15">
+                                        <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+                                            <Label Text="&#xE713;" FontFamily="FluentIcons" FontSize="24" TextColor="{Binding ButtonColor}" VerticalOptions="Center"/>
+                                            <Label Text="Licença e Dados" FontFamily="OpenSansSemibold" FontSize="22" TextColor="{Binding PrimaryTextColor}" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <BoxView HeightRequest="1" Color="{Binding BorderColor}" Margin="0,5"/>
+                                        
+                                        <Label Text="• Ativar Versão Pro:" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                                        <Label Text="No menu de Configurações, pode inserir a sua Chave de Licença Pro para desbloquear todo o poder da IA." FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="15,0,0,10"/>
+
+                                        <Label Text="• Partilhar / Backup (JSON):" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                                        <Label Text="No menu partilhar, pode exportar toda a sua base de conhecimento para um ficheiro JSON e enviá-lo a um colega, ou importar uma base existente." FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="15,0,0,0"/>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </ScrollView>
+                </ContentView>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.ColumnSpan="2" IsVisible="{Binding IsProAlertVisible}" BackgroundColor="#B3000000" ZIndex="20">
+            <Border BackgroundColor="{Binding CardColor}" WidthRequest="440" StrokeThickness="0" Padding="35" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
+                <VerticalStackLayout Spacing="15">
+                    <Border BackgroundColor="#FEE2E2" WidthRequest="64" HeightRequest="64" HorizontalOptions="Center" StrokeThickness="0" Margin="0,0,0,10">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="32" /></Border.StrokeShape>
+                        <Label Text="&#xE72E;" FontFamily="FluentIcons" FontSize="30" TextColor="#EF4444" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Border>
+                    <Label Text="Recurso Bloqueado" HorizontalOptions="Center" FontFamily="OpenSansSemibold" FontSize="24" TextColor="{Binding PrimaryTextColor}" />
+                    <Label Text="Esta funcionalidade requer uma chave cadastrada." HorizontalOptions="Center" HorizontalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="15" TextColor="{Binding SecondaryTextColor}" Margin="0,0,0,10" />
+                    <Border BackgroundColor="{Binding SurfaceColor}" StrokeThickness="0" Padding="15" Margin="0,0,0,10">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                        <Label Text="Vá ao menu de Configurações (⚙️) e insira a sua chave de ativação para desbloquear o poder da IA." HorizontalTextAlignment="Center" FontFamily="OpenSansRegular" FontSize="14" TextColor="{Binding PrimaryTextColor}"/>
+                    </Border>
+                    <Button Text="Entendi" Command="{Binding CloseProAlertCommand}" BackgroundColor="{Binding ButtonColor}" TextColor="White" FontFamily="OpenSansSemibold" HeightRequest="48" CornerRadius="12"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <Grid Grid.ColumnSpan="2" IsVisible="{Binding IsShareModalVisible}" BackgroundColor="#80000000" ZIndex="10">
+            <Border BackgroundColor="{Binding CardColor}" WidthRequest="440" StrokeThickness="0" Padding="30" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="&#xE72D;" FontFamily="FluentIcons" FontSize="34" HorizontalOptions="Center" TextColor="{Binding SidebarColor}" />
+                    <Label Text="{Binding TxtCompartilhar}" HorizontalOptions="Center" FontFamily="OpenSansSemibold" FontSize="22" TextColor="{Binding PrimaryTextColor}" />
+                    <Label Text="Exporte a sua base de conhecimento ou importe JSON. Os dados são adicionados sem apagar os existentes." FontFamily="OpenSansRegular" FontSize="13" TextColor="{Binding SecondaryTextColor}" HorizontalTextAlignment="Center" />
+                    <BoxView HeightRequest="1" Color="{Binding BorderColor}" />
+                    <Button Text=" Importar JSON" Command="{Binding ImportarJsonCommand}" BackgroundColor="{Binding SurfaceColor}" TextColor="{Binding PrimaryTextColor}" FontFamily="OpenSansSemibold" FontSize="15" HeightRequest="52" CornerRadius="14">
+                        <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE8B5;" Color="{Binding SidebarColor}" Size="18"/></Button.ImageSource>
+                    </Button>
+                    <Button Text=" Exportar JSON" Command="{Binding ExportarJsonCommand}" BackgroundColor="{Binding SidebarColor}" TextColor="White" FontFamily="OpenSansSemibold" FontSize="15" HeightRequest="52" CornerRadius="14">
+                        <Button.ImageSource><FontImageSource FontFamily="FluentIcons" Glyph="&#xE74E;" Color="White" Size="18"/></Button.ImageSource>
+                    </Button>
+                    <Button Text="Fechar" Command="{Binding CloseShareModalCommand}" BackgroundColor="Transparent" TextColor="{Binding SecondaryTextColor}" FontFamily="OpenSansRegular" FontSize="14"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <Grid Grid.ColumnSpan="2" IsVisible="{Binding IsSettingsModalVisible}" BackgroundColor="#80000000" ZIndex="11">
+            <Border BackgroundColor="{Binding CardColor}" WidthRequest="490" StrokeThickness="0" Padding="30" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
+                <VerticalStackLayout Spacing="18">
+                    <Grid ColumnDefinitions="*,Auto"><Label Text="{Binding TxtConfiguracoes}" FontFamily="OpenSansSemibold" FontSize="22" TextColor="{Binding PrimaryTextColor}" VerticalOptions="Center"/><Button Grid.Column="1" Text="✕" Command="{Binding CloseSettingsModalCommand}" BackgroundColor="Transparent" TextColor="{Binding SecondaryTextColor}" FontSize="20"/></Grid>
+                    
+                    <Label Text="{Binding TxtTema}" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                    <HorizontalStackLayout Spacing="12">
+                        <Button WidthRequest="42" HeightRequest="42" CornerRadius="21" BackgroundColor="#4C1D95" Command="{Binding ChangeThemeCommand}" CommandParameter="RoxoLaranja"/>
+                        <Button WidthRequest="42" HeightRequest="42" CornerRadius="21" BackgroundColor="#005A9E" Command="{Binding ChangeThemeCommand}" CommandParameter="BlueWhite"/>
+                        <Button WidthRequest="42" HeightRequest="42" CornerRadius="21" BackgroundColor="#2D6A4F" Command="{Binding ChangeThemeCommand}" CommandParameter="Green"/>
+                        <Button WidthRequest="42" HeightRequest="42" CornerRadius="21" BackgroundColor="#7F1D1D" Command="{Binding ChangeThemeCommand}" CommandParameter="Red"/>
+                        <Button WidthRequest="42" HeightRequest="42" CornerRadius="21" BackgroundColor="#1E1E1E" Command="{Binding ChangeThemeCommand}" CommandParameter="Dark"/>
+                        <Button WidthRequest="42" HeightRequest="42" CornerRadius="21" BackgroundColor="#1B2838" BorderColor="#66C0F4" BorderWidth="2" Command="{Binding ChangeThemeCommand}" CommandParameter="Steam"/>
+                    </HorizontalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="{Binding BorderColor}" />
+
+                    <Label Text="{Binding TxtIdioma}" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}"/>
+                    <HorizontalStackLayout Spacing="12">
+                        <Button Text="PT" Command="{Binding ChangeLanguageCommand}" CommandParameter="PT" BackgroundColor="{Binding BorderColor}" TextColor="{Binding PrimaryTextColor}" CornerRadius="8" WidthRequest="60" />
+                        <Button Text="EN" Command="{Binding ChangeLanguageCommand}" CommandParameter="EN" BackgroundColor="{Binding BorderColor}" TextColor="{Binding PrimaryTextColor}" CornerRadius="8" WidthRequest="60" />
+                        <Button Text="ES" Command="{Binding ChangeLanguageCommand}" CommandParameter="ES" BackgroundColor="{Binding BorderColor}" TextColor="{Binding PrimaryTextColor}" CornerRadius="8" WidthRequest="60" />
+                    </HorizontalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="{Binding BorderColor}" />
+
+                    <VerticalStackLayout Spacing="2" Margin="0,5,0,5">
+                        <Label Text="Chave de Licença Pro" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{Binding PrimaryTextColor}" />
+                        <Label Text="Insira a sua chave de ativação para desbloquear os recursos de IA." FontFamily="OpenSansRegular" FontSize="13" TextColor="{Binding SecondaryTextColor}" />
+                    </VerticalStackLayout>
+                    <Border BackgroundColor="{Binding SurfaceColor}" Stroke="{Binding BorderColor}" StrokeThickness="1" HeightRequest="46" Padding="15,0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Entry Text="{Binding GroqApiKey, Mode=TwoWay}" Placeholder="Código de ativação (Ex: LINX-PRO-...)" IsPassword="True" BackgroundColor="Transparent" TextColor="{Binding PrimaryTextColor}" VerticalOptions="Center"/>
+                    </Border>
+                    
+                    <Button Text="{Binding TxtConcluido}" Command="{Binding CloseSettingsModalCommand}" BackgroundColor="{Binding SidebarColor}" TextColor="White" CornerRadius="12" HeightRequest="48" Margin="0,6,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

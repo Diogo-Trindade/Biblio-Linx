@@ -1,0 +1,295 @@
+BASE DE CONHECIMENTO – SUPORTE TEF / PIX / TABELAS
+
+========================================
+PADRÃO DE ATENDIMENTO (USAR SEMPRE)
+========================================
+
+Validar os dados do cliente
+
+1. Validar versão do sistema (DTEF / DPOS / SITEF )
+2. Validar comunicação (internet / ambiente / portas / servidor)
+3. Validar pinpad (driver / porta / reconhecimento)
+4. Validar tabelas (carga atualizada e se esta subindo)
+5. Validar adquirente (erro externo ou interno)
+6. Testar transação e validar sempre o relaório analítico (NAUT = Não autorizado e erros iniciados com T = Erros TEF)
+7. Validar se loja esta ativa
+8. Validar quando as transações pararam ou quando o problema começou
+9. Validar os roteamentos ativos e adquirentes cadastradas
+10. Validar se o psp e os provedores estão ativos no QRLinx.
+
+
+========================================
+TEF – CASOS E SOLUÇÕES
+========================================
+
+Caso:
+Erro ao iniciar operação TEF em ambiente com sistema terceiro.
+
+Ação e possível solução:
+Analisar os arquivos, analisar as permissões de pastas, analisar o tipo de integração.
+Reinstalação completa do DTEF, atualização da versão e testes de integração com o sistema.
+
+O que validar sempre:
+- Versão do DTEF
+- Compatibilidade com sistema
+- Configuração de pastas
+
+
+----------------------------------------
+
+Caso:
+Pinpad não reconhecido.
+Ação e possível solução:
+Instalação ou atualização do driver do pinpad e ajuste da porta COM, inserir e retirar manualmente o pinpad.
+
+O que validar sempre:
+- Driver instalado
+- Porta correta
+- Comunicação ativa
+
+----------------------------------------
+
+Caso:
+Erro de comunicação com servidor TEF.
+
+Ação e possível solução:
+Validação de rede, liberação de portas, testes de conexão (ping/telnet) e possível reinstalação.
+
+O que validar sempre:
+- Internet ativa
+- Firewall
+- Porta liberada
+
+
+----------------------------------------
+
+Caso:
+Erro GP Direção não iniciado.
+
+Ação e possível solução:
+Configuração do serviço para inicialização automática e ajuste do DPOS, validar versão do GPdireção se esta corretamente instalado.
+
+O que validar sempre:
+- Serviço ativo
+- Configuração correta
+
+
+----------------------------------------
+
+Caso:
+Erro de versão desatualizada.
+Ação e possível solução:
+Remoção completa da versão antiga e instalação da versão atual com atualização.
+O que validar sempre:
+- Versão instalada
+- Atualizador executado
+
+
+========================================
+PIX – CASOS E SOLUÇÕES
+========================================
+
+Caso:
+Erro ao gerar QR Code / Pix não disponível.
+Ação e possível solução:
+Verificar se o módulo Pix está contratado e ativo. Validar comunicação com servidor.
+O que validar sempre:
+- Módulo contratado
+- Internet ativa
+- Integração com sistema
+
+
+----------------------------------------
+
+Caso:
+Erro “rede indisponível” no Pix.
+Ação e possível solução:
+Validar conexão de rede e status do serviço Pix no sistema.
+O que validar sempre:
+- Internet
+- Status do serviço
+- Logs de erro
+
+
+========================================
+TABELAS – CASOS E SOLUÇÕES
+========================================
+
+Caso:
+Erro de transação por tabela desatualizada.
+Ação e possível solução:
+Realizar carga de tabelas atualizadas e testar novamente.
+O que validar sempre:
+- Data da última carga
+- Sincronização
+
+
+----------------------------------------
+
+Caso:
+Erro após carga de tabelas.
+Ação e possível solução:
+Reprocessar carga de tabelas corretamente.
+O que validar sempre:
+- Integridade das tabelas
+- Atualização completa
+
+
+========================================
+FLUXO DE DIAGNÓSTICO (RÁPIDO)
+========================================
+
+Erro no TEF?
+→ Validar dados do cliente.
+→ Validar utilização Sitef ou DTEF e o tipo de integração
+→ Funciona internet?
+   NÃO → Corrigir rede
+   SIM ↓
+→ TEF abre?
+   NÃO →
+      → Verificar instalação
+      → Reinstalar DTEF
+      → Validar versão
+   SIM ↓
+→ Pinpad responde?
+   NÃO →
+      → Instalar driver
+      → Validar porta COM
+      → Testar outro USB
+   SIM ↓
+→ Versão do driver e do TEF, atual?
+   NÃO → Atualizar
+   SIM ↓
+→ Tabelas OK?
+   NÃO → Carga de tabelas
+   SIM ↓
+→ Erro ao transacionar?
+   NÃO →
+      → Validar sistema de vendas (ERP)
+   SIM ↓
+→ Mensagem de erro?
+   → T014 / T83 / Timeout?
+        → Carga de tabelas
+        → Validar comunicação
+	→ Validar roteamento
+   → Tela roxa / travamento?
+        → Atualizar DTEF
+        → Aplicar corretor de bugs
+   → Erro SSL / conexão?
+        → Validar portas
+        → Firewall
+        → Rede
+→ Erro continua?
+   → Validar adquirente
+   → Validar loja ativa ou provedor ativo
+→ Transação foi autorizada?
+   NÃO →
+      → Validar adquirente
+   SIM ↓
+→ Venda não confirmou?
+   → Verificar callback
+   → Validar integração ERP
+   → Verificar logs
+→ Problema persiste?
+   → Escalar PAY / vertical
+
+========= QR LINX ==============
+Erro no PIX / QR Linx?
+→ QR Code gera?
+   NÃO →
+      → Validar módulo contratado
+      → Validar integração QRLinx
+      → Verificar erro "rede indisponível"
+   SIM ↓
+→ QR aparece no pinpad?
+   NÃO →
+      → Instalar driver (Gertec / Ingenico)
+      → Validar pngquant.exe
+      → Reiniciar ambiente
+   SIM ↓
+→ Cliente consegue pagar?
+   NÃO →
+      → Testar outro banco
+      → Validar chave PIX
+      → Verificar DICT
+   SIM ↓
+→ Venda confirmou?
+   NÃO →
+      → Validar webhook
+      → Validar automação
+      → Timeout de confirmação
+   SIM ↓
+→ Venda foi desfeita?
+   SIM →
+      → Validar devoluções
+      → Confirmar automação (ERP)
+→ Problema de autenticação?
+   → Reset 2FA
+   → Validar usuário
+→ Problema webhook?
+   → Validar URL
+   → Permissão admin
+   → Criar manualmente
+
+Obs: normalmente o qrlinx é integrado com o DTEF ou via api com a automação se tudo foi feito por parte do setor de CROSS, analisar com automação [ERP]
+
+=========SITEF===========
+Erro no SITEF?
+→ SITEF conecta?
+   NÃO →
+      → Validar VPN
+      → Validar certificados
+      → Testar ping
+      → Testar telnet
+   SIM ↓
+→ Erro de comunicação?
+   SIM →
+      → Verificar portas
+      → Firewall
+      → Serviços ativos
+   NÃO ↓
+→ Pinpad funciona?
+   NÃO →
+      → Driver instalado
+      → Porta COM correta
+      → Testar outro equipamento
+   SIM ↓
+→ Erro INTPOS.STS?
+   SIM →
+      → Reinstalar SITEF modular
+      → Validar DLLs
+      → Verificar instalação
+   NÃO ↓
+→ QR / PIX não aparece?
+   SIM →
+      → Validar integração SITEF ↔ ERP
+      → Validar se chave esta cadastrada no portal FEPAS
+      → Validar se esta cadastrado no roteamento e nas configurações do SITEF o pix
+      → Validar driver pinpad
+   NÃO ↓
+→ Erro versão Java (SitefWeb)?
+   SIM →
+      → Atualizar Java
+      → Reinstalar ambiente
+   NÃO ↓
+→ Erro após migração?
+   SIM →
+      → Validar servidor
+      → Validar ip do servidor
+      → Validar ambiente novo
+→ Persistiu?
+   → Reinstalar completo
+   → Validar certificados novamente
+   → Escalar
+
+========================================
+RESUMO FINAL
+========================================
+
+Principais causas:
+- Versão desatualizada
+- Driver pinpad
+- Rede / comunicação
+- Tabelas
+- Adquirente
+

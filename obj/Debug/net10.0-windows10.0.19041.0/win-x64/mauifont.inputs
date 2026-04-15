@@ -1,0 +1,4 @@
+File=C:\Users\diogo.trindade\.nuget\packages\syncfusion.maui.core\33.1.46\buildTransitive\..\buildTransitive\Resources\Fonts\MauiMaterialAssets.ttf;Link=Resources\Fonts\MauiMaterialAssets.ttf;Alias=
+File=Resources\Fonts\OpenSans-Regular.ttf;Link=;Alias=OpenSansRegular
+File=Resources\Fonts\OpenSans-Semibold.ttf;Link=;Alias=OpenSansSemibold
+File=Resources\Fonts\SEGOEICONS.TTF;Link=;Alias=FluentIcons
