@@ -18,7 +18,7 @@ public partial class MainPage : ContentPage
         BindingContext = viewModel;
         _viewModel = viewModel;
 
-        // Ouve a adição de mensagens para o scroll automático da IA
+        
         _viewModel.ChatMessages.CollectionChanged += OnChatMessagesChanged;
     }
 
@@ -47,15 +47,12 @@ public partial class MainPage : ContentPage
     private void UndoEditor_Clicked(object? sender, EventArgs e) => MainRichTextEditor?.Undo();
     private void RedoEditor_Clicked(object? sender, EventArgs e) => MainRichTextEditor?.Redo();
 
-    // =========================================================================
-    // EVENTOS SEGUROS PARA AS LISTAS (Bypass ao Crash Silencioso do Windows)
-    // =========================================================================
     private void ExecuteCommand(System.Windows.Input.ICommand command, object parameter)
     {
         if (command?.CanExecute(parameter) == true) command.Execute(parameter);
     }
 
-    // Ações dos Grupos (Usa a Base Segura do Elemento)
+
     private void OnToggleGroupTapped(object sender, TappedEventArgs e) => ExecuteCommand(_viewModel.ToggleGroupCommand, ((Element)sender).BindingContext);
     private void OnAddItemClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.AddItemCommand, ((Button)sender).CommandParameter);
     private void OnFavoriteGroupClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.ToggleFavoriteGroupCommand, ((Button)sender).CommandParameter);
@@ -65,14 +62,14 @@ public partial class MainPage : ContentPage
     private void OnEditGroupClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.EditGroupCommand, ((Button)sender).CommandParameter);
     private void OnDeleteGroupClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.DeleteGroupCommand, ((Button)sender).CommandParameter);
 
-    // Ações das Páginas (Itens)
+
     private void OnFavoriteItemClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.ToggleFavoriteItemCommand, ((Button)sender).CommandParameter);
     private void OnSelectItemTapped(object sender, TappedEventArgs e) => ExecuteCommand(_viewModel.SelectKnowledgeItemCommand, ((Element)sender).BindingContext);
     private void OnMoveItemUpClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.MoveItemUpCommand, ((Button)sender).CommandParameter);
     private void OnMoveItemDownClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.MoveItemDownCommand, ((Button)sender).CommandParameter);
     private void OnDeleteItemClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.DeleteItemCommand, ((Button)sender).CommandParameter);
 
-    // Ações dos Casos
+    
     private void OnSelectSupportCaseTapped(object sender, TappedEventArgs e) => ExecuteCommand(_viewModel.SelectSupportCaseCommand, ((Element)sender).BindingContext);
     private void OnEditCasoClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.EditCasoCommand, ((Button)sender).CommandParameter);
     private void OnDeleteCasoClicked(object sender, EventArgs e) => ExecuteCommand(_viewModel.DeleteCasoCommand, ((Button)sender).CommandParameter);
