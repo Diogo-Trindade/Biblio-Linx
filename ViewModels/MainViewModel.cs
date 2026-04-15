@@ -29,9 +29,7 @@ namespace BiblioLinx.ViewModels
         private readonly IGroqApiService _groqService;
         private readonly DatabaseService _dbService;
 
-        // ==========================================
-        // O SEU TEMA ORIGINAL INTACTO
-        // ==========================================
+      
         [ObservableProperty] private string _appBackgroundColor = "#F4F0FB";
         [ObservableProperty] private string _sidebarColor = "#4C1D95";
         [ObservableProperty] private string _topbarColor = "#4C1D95";
@@ -51,9 +49,7 @@ namespace BiblioLinx.ViewModels
         [ObservableProperty] private bool _startWithWindows = true;
         [ObservableProperty] private string _selectedLanguage = "PT";
 
-        // ==========================================
-        // PROTEÇÃO DA IA (Pro)
-        // ==========================================
+      
         [ObservableProperty] private bool _isProAtivo = false; 
         [ObservableProperty] private bool _isProAlertVisible = false; 
 
@@ -100,9 +96,7 @@ namespace BiblioLinx.ViewModels
         [ObservableProperty] private string _searchText = string.Empty;
         partial void OnSearchTextChanged(string value) => FiltrarBaseDeConhecimento(value);
 
-        // ==========================================
-        // CASOS SALVOS (Com a Lógica Dinâmica)
-        // ==========================================
+       
         [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasSavedCases))] private ObservableCollection<SupportCase> _supportCases = new();
         public bool HasSavedCases => SupportCases != null && SupportCases.Count > 0;
 
@@ -123,7 +117,7 @@ namespace BiblioLinx.ViewModels
             _groqService = groqService;
             _dbService = dbService;
 
-            SelectedTheme = Preferences.Get(nameof(SelectedTheme), "RoxoLaranja"); // Padrão Restaurado!
+            SelectedTheme = Preferences.Get(nameof(SelectedTheme), "RoxoLaranja");
             SelectedLanguage = Preferences.Get(nameof(SelectedLanguage), "PT");
             StartWithWindows = Preferences.Get(nameof(StartWithWindows), true);
             GroqApiKey = Preferences.Get("GroqApiKey", string.Empty);
@@ -158,7 +152,7 @@ namespace BiblioLinx.ViewModels
             {
                 SupportCases.Clear();
                 foreach (var caso in casos) SupportCases.Add(caso);
-                OnPropertyChanged(nameof(HasSavedCases)); // Atualiza a barra lateral se existirem casos!
+                OnPropertyChanged(nameof(HasSavedCases)); 
             });
         }
 
@@ -217,7 +211,7 @@ namespace BiblioLinx.ViewModels
             if (viewName == "Share") { IsShareModalVisible = true; return; }
             if (viewName == "Settings") { IsSettingsModalVisible = true; return; }
             
-            // A PROTEÇÃO NO CÉREBRO: Se tentar entrar na IA sem chave, mostra o aviso e não avança!
+            
             if ((viewName == "AIAssistant" || viewName == "Resumo") && !IsProAtivo) 
             { 
                 IsProAlertVisible = true; 
@@ -513,9 +507,7 @@ namespace BiblioLinx.ViewModels
             }
         }
 
-        // ==========================================
-        // MÉTODOS AUXILIARES DE ALERTA 
-        // ==========================================
+  
         private static Page? GetCurrentPage()
         {
 #pragma warning disable CS0618
@@ -557,9 +549,6 @@ namespace BiblioLinx.ViewModels
         }
     }
 
-    // ====================================================================
-    // CLASSES DE EXPORTAÇÃO JSON
-    // ====================================================================
     public sealed class ExportData { [JsonPropertyName("grupos")] public List<GrupoExport> Grupos { get; set; } = new(); }
     public sealed class GrupoExport { [JsonPropertyName("groupName")] public string GroupName { get; set; } = string.Empty; [JsonPropertyName("colorHex")] public string? ColorHex { get; set; } [JsonPropertyName("order")] public int Order { get; set; } [JsonPropertyName("isFavorite")] public bool IsFavorite { get; set; } [JsonPropertyName("items")] public List<ItemExport> Items { get; set; } = new(); }
     public sealed class ItemExport { [JsonPropertyName("title")] public string Title { get; set; } = string.Empty; [JsonPropertyName("content")] public string? Content { get; set; } [JsonPropertyName("order")] public int Order { get; set; } [JsonPropertyName("isFavorite")] public bool IsFavorite { get; set; } }
