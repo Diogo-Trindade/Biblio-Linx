@@ -13,7 +13,6 @@ public class DatabaseService
 {
     private SQLiteAsyncConnection _db;
     
-    // Impede a aplicação de ler e escrever ao mesmo tempo (Evita Crashes)
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
     private async Task InitAsync()
